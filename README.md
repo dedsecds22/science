@@ -21,38 +21,7 @@ Egy modern, responsív weboldal a világ legkiválóbb tudósairól és fölfede
 - **Tablet (481-1024px)**: 2 oszlopos grid, optimalizált nyomások
 - **Asztali (1025px+)**: Teljes 3+ oszlopos grid, párhuzamos PDF nézegető
 
-## 🚀 GitHub Pages-re való feltöltés
 
-### 1. Git Repository Létrehozása
-
-```bash
-# Inicializáld a git repositoryt
-git init
-
-# Adj hozzá minden fájlt
-git add .
-
-# Commit az első verzióval
-git commit -m "Initial commit: Modern scientist encyclopedia website"
-```
-
-### 2. GitHub Pages Beállítása
-
-1. A GitHub-on hozz létre egy új repository-t: `<username>.github.io`
-2. vagy egy meglévő repository-hoz a Settings → Pages alatt válaszd a `main` brancht
-3. A mappa lehet a root vagy a `/docs` mappa
-
-### 3. Feltöltés GitHub-ra
-
-```bash
-git remote add origin https://github.com/<username>/<repository>.git
-git branch -M main
-git push -u origin main
-```
-
-Az oldal 1-2 perc múlva elérhető lesz az alábbi címen:
-- `https://<username>.github.io` (ha `<username>.github.io` a repository neve)
-- `https://<username>.github.io/<repository>` (ha más a repository neve)
 
 ## 📝 Fájl Struktúra
 
