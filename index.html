@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tudósok - Híres Tudósok Enciklopédiája</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+</head>
+<body>
+    <div class="container content-wrapper">
+        <!-- Header -->
+        <div class="page-header">
+            <h1 style="text-decoration: underline; text-align: center; width: 100%; margin-bottom: 1.5rem;">Híres Tudósok</h1>
+            <nav style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; width: 100%;">
+                <a href="index.html" class="nav-btn active">Tudósok</a>
+                <a href="pdf.html" class="nav-btn">Tudományos ismeretterjesztés</a>
+            </nav>
+        </div>
+        
+        <p class="page-intro" style="max-width: 800px; margin: 2rem auto;">Fedezd fel a világ legkiválóbb tudósait és fölfedezéseit. Böngéssz a név, szakterület vagy ország alapján, vagy nézd meg a részletes információkat az egyes tudósokról.</p>
+
+        <!-- Keresés és Szűrés -->
+        <div style="max-width: 100%; margin: 2rem auto 3rem;">
+            <form id="searchForm" style="display: grid; gap: 10px; margin-bottom: 1.5rem;">
+                <input type="text" id="searchInput" class="form-control" placeholder="Keresés név, szakterület vagy ország alapján..." value="">
+                <div style="display: grid; grid-template-columns: 1fr auto; gap: 10px;">
+                    <select id="sortSelect" class="form-select">
+                        <option value="vezeteknev">Vezetéknév szerint</option>
+                        <option value="keresztnev">Keresztnév szerint</option>
+                        <option value="szakterulet">Szakterület szerint</option>
+                        <option value="orszag">Ország szerint</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">Keresés</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Tudósok Grid -->
+        <div style="margin-top: 2rem;">
+            <h2 class="text-center mb-4">Tudósok Gyűjteménye</h2>
+            <div id="tudosokContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; justify-items: center;">
+                <!-- Cards will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="tudosok.js"></script>
+
+    <script>
+        let filteredTudosok = [];
+
+        function loadTudosok() {
+            // Clean the data
+            tudosok.forEach(t => {
+                t.id = t._id.$oid;
+                t.szuletesiDatum = t.szuletesiDatum ? new Date(parseInt(t.szuletesiDatum.$date.$numberLong)) : null;
+                t.halalozasiDatum = t.halalozasiDatum ? new Date(parseInt(t.halalozasiDatum.$date.$numberLong)) : null;
+            });
+            filteredTudosok = [...tudosok];
+            renderTudosok();
+        }
+
+        function renderTudosok() {
+            const container = document.getElementById('tudosokContainer');
+            container.innerHTML = '';
+            
+            if (filteredTudosok.length === 0) {
+                container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 2rem;"><p style="font-size: 1.1rem;">Nincs találat a kereséshez.</p></div>';
+                return;
+            }
+            
+            filteredTudosok.forEach(tudos => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.style.maxWidth = '100%';
+                card.innerHTML = `
+                    <img src="uploads/${tudos.kep}" class="card-img-top" alt="${tudos.nev}" style="height: 220px; object-fit: cover;">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">${tudos.nev}</h5>
+                        <p class="card-text"><strong>Szakterület:</strong> ${tudos.szakterulet}</p>
+                        <p class="card-text"><strong>Ország:</strong> ${tudos.orszag}</p>
+                        <a href="details.html?id=${tudos.id}" class="btn btn-primary" style="width: 100%;">Részletek</a>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function filterAndSort() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const sortBy = document.getElementById('sortSelect').value;
+
+            filteredTudosok = tudosok.filter(t => 
+                t.nev.toLowerCase().includes(searchTerm) ||
+                t.szakterulet.toLowerCase().includes(searchTerm) ||
+                t.orszag.toLowerCase().includes(searchTerm)
+            );
+
+            filteredTudosok.sort((a, b) => {
+                if (sortBy === 'nev') return a.nev.localeCompare(b.nev);
+                if (sortBy === 'keresztnev') {
+                    const aFirst = a.nev.split(' ')[0];
+                    const bFirst = b.nev.split(' ')[0];
+                    return aFirst.localeCompare(bFirst);
+                }
+                if (sortBy === 'vezeteknev') {
+                    const aLast = a.nev.split(' ').slice(-1)[0];
+                    const bLast = b.nev.split(' ').slice(-1)[0];
+                    return aLast.localeCompare(bLast);
+                }
+                if (sortBy === 'szakterulet') return a.szakterulet.localeCompare(b.szakterulet);
+                if (sortBy === 'orszag') return a.orszag.localeCompare(b.orszag);
+                return 0;
+            });
+
+            renderTudosok();
+        }
+
+        document.getElementById('searchForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            filterAndSort();
+        });
+
+        document.getElementById('searchInput').addEventListener('input', filterAndSort);
+        document.getElementById('sortSelect').addEventListener('change', filterAndSort);
+
+        loadTudosok();
+    </script>
+</body>
+</html>
